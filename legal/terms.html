@@ -1,95 +1,131 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>利用規約 | Cpzenar</title>
-  <style>
-    :root{color-scheme:light dark}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic UI",Meiryo,sans-serif;line-height:1.7;margin:0;background:#fff;color:#222}
-    header,main,footer{max-width:960px;margin:auto;padding:24px}
-    header{border-bottom:1px solid #e5e7eb}
-    h1{font-size:1.5rem;margin:0}
-    h2{font-size:1.1rem;margin-top:2rem}
-    ul{margin-left:1.25rem}
-    a{color:#2563eb;text-decoration:none}
-    a:hover{text-decoration:underline}
-    small{color:#6b7280}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>利用規約 | CPZENAR</title>
+<style>
+body{font:15px/1.8 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;margin:0;color:#222}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 16px}
+h2{font-size:18px;margin:24px 0 8px}
+section{margin:18px 0}
+ul,ol{padding-left:1.2em}
+small,.muted{color:#666}
+a{color:#0366d6;text-decoration:none}
+a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #eee;margin:24px 0}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid #eee;color:#666}
+</style>
 </head>
 <body>
-<header>
+<div class="wrap">
   <h1>利用規約</h1>
-  <small>最終更新日：2025-10-06</small>
-</header>
+  <p class="muted">最終更新日：2025-10-06</p>
 
-<main>
-  <p>この利用規約（以下「本規約」）は、<strong>Cpzenar Labs</strong>（以下「当方」）が提供するサービス「Cpzenar」（以下「本サービス」）の利用条件を定めるものです。利用者は本規約に同意の上、本サービスをご利用ください。</p>
+  <section>
+    <h2>1. 適用</h2>
+    <p>
+      本利用規約（以下「本規約」）は、CPZENAR Labs（以下「当社」）が提供するアプリケーションおよび関連ウェブサイト、API 等（総称して「本サービス」）の利用条件を定めるものです。
+      ユーザーは本規約に同意のうえ本サービスを利用するものとします。
+    </p>
+  </section>
 
-  <h2>1. 定義</h2>
-  <ul>
-    <li>「利用者」：本サービスを利用するすべての者</li>
-    <li>「コンテンツ」：本サービス上で表示・配信される情報、ソフトウェア、データ等</li>
-    <li>「サブスクリプション」：有償プランによる継続利用契約</li>
-  </ul>
+  <section>
+    <h2>2. アカウントと認証</h2>
+    <ul>
+      <li>有料版の利用には、決済メールアドレスに紐づくサブスクリプションが必要です。</li>
+      <li>当社は、API により課金状態（有効/無効・プラン）を照合します。複数端末での利用可否は当社の裁量で制御します。</li>
+      <li>不正利用防止のため、アクセス制限・レート制限・一時停止等の措置を講じることがあります。</li>
+    </ul>
+  </section>
 
-  <h2>2. アカウント</h2>
-  <ul>
-    <li>利用者は正確な情報を登録し、保持してください。</li>
-    <li>認証情報の管理は利用者の責任です。第三者に使用させてはなりません。</li>
-  </ul>
+  <section>
+    <h2>3. ライセンスと禁止行為</h2>
+    <p>当社はユーザーに対し、本サービスを本規約の範囲内で利用するための非独占的・譲渡不可・再許諾不可の使用権を付与します。以下の行為を禁止します。</p>
+    <ol>
+      <li>リバースエンジニアリング、解析、改変、再配布、再販売</li>
+      <li>著作権・商標等の知的財産権を侵害する行為</li>
+      <li>当社サーバー・API への過度な負荷、脆弱性探索、スクレイピング</li>
+      <li>法令・公序良俗に反する行為、第三者の権利侵害</li>
+      <li>不正アクセス、他人のアカウントの利用</li>
+    </ol>
+  </section>
 
-  <h2>3. 提供内容・変更</h2>
-  <p>当方は、機能追加・仕様変更・提供停止を行うことがあります。重大な変更は合理的な方法で通知します。</p>
+  <section>
+    <h2>4. サブスクリプション</h2>
+    <ul>
+      <li>本サービスの有料版は <strong>月額 ¥299（内税）</strong> です。年払い・買い切りは提供しません。</li>
+      <li>課金・更新・解約・返金は <a href="/legal/refund.html">返金・キャンセルポリシー</a> に従います。</li>
+      <li>価格や機能は将来変更されることがあります。重要な変更は合理的な方法で通知します。</li>
+    </ul>
+  </section>
 
-  <h2>4. 料金・決済</h2>
-  <ul>
-    <li>有償プランの料金は表示金額のとおりです（消費税等を含む／別途表示の場合あり）。</li>
-    <li>決済は Stripe を利用します。カード情報は Stripe が処理し、当方は保持しません。</li>
-    <li>更新は各サイクルで自動更新されます。解約の申し出がない限り継続課金となります。</li>
-  </ul>
+  <section>
+    <h2>5. コンテンツとデータ</h2>
+    <ul>
+      <li>ユーザーが入力・保存・生成するテキスト等（「ユーザーコンテンツ」）の権利はユーザーに帰属します。</li>
+      <li>本サービスはローカル保存（例：IndexedDB等）を積極的に活用します。ユーザー端末の故障・紛失・再インストール等によるデータ消失について、当社は復旧義務を負いません。</li>
+      <li>匿名の利用状況統計やクラッシュ情報を品質改善目的で収集することがあります。詳細は <a href="/legal/privacy.html">プライバシーポリシー</a> を参照してください。</li>
+    </ul>
+  </section>
 
-  <h2>5. 解約</h2>
-  <ul>
-    <li>利用者はいつでも解約できます。解約は次回更新日以降に反映され、当該期間の返金は行いません（返金ポリシーは <a href="/legal/refund.html">こちら</a>）。</li>
-  </ul>
+  <section>
+    <h2>6. サポート</h2>
+    <ul>
+      <li>サポート窓口は原則メールのみ：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a></li>
+      <li>個別の技術的支援やデータ復旧は原則として提供しません（ベストエフォート対応）。</li>
+    </ul>
+  </section>
 
-  <h2>6. 禁止事項</h2>
-  <ul>
-    <li>法令・公序良俗に反する行為</li>
-    <li>不正アクセス、リバースエンジニアリング、過度な負荷のかかる行為</li>
-    <li>第三者の権利を侵害する行為</li>
-    <li>本サービスの提供を妨げる行為</li>
-  </ul>
+  <section>
+    <h2>7. 免責</h2>
+    <ul>
+      <li>本サービスは現状有姿（AS IS）で提供され、明示黙示の保証はありません（商品性・特定目的適合性・非侵害性を含むがこれに限られません）。</li>
+      <li>外部サービス（Stripe 等）の障害・規約変更、OS/ブラウザ/端末・ネットワークの事情に起因する障害や損害について、当社は責任を負いません。</li>
+    </ul>
+  </section>
 
-  <h2>7. 知的財産権</h2>
-  <p>本サービスに関する知的財産権は当方または正当な権利者に帰属します。利用者は、本規約に明示された範囲を超えて使用してはなりません。</p>
+  <section>
+    <h2>8. 責任の制限</h2>
+    <p>
+      当社の損害賠償責任は、過去 1 か月間にユーザーが当社に実際に支払った対価の総額を上限とします。
+      ただし、消費者契約法その他の強行法規により責任制限が無効となる範囲では適用されません。
+    </p>
+  </section>
 
-  <h2>8. 免責</h2>
-  <ul>
-    <li>当方は、本サービスの正確性・有用性・適合性等について保証しません。</li>
-    <li>当方は、利用者に発生した間接損害・特別損害・逸失利益等について責任を負いません。</li>
-    <li>当方の故意または重過失による場合を除き、当方の責任は過去12か月に利用者が支払った対価の総額を上限とします。</li>
-  </ul>
+  <section>
+    <h2>9. サービスの変更・停止</h2>
+    <p>
+      当社は、運用上または技術上の理由により、本サービスの全部または一部を変更・中断・終了することがあります。
+      有料機能に重要な影響がある場合、合理的な方法で事前に通知します。
+    </p>
+  </section>
 
-  <h2>9. サポート</h2>
-  <p>標準のサポートはメールで提供します（<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a>）。対応時間・水準は別途定めがある場合を除き、ベストエフォートとなります。</p>
+  <section>
+    <h2>10. 規約の変更</h2>
+    <p>
+      当社は本規約を随時変更できます。重要な変更はサイト内掲示やメールで周知し、変更後の利用で同意されたものとみなします。
+    </p>
+  </section>
 
-  <h2>10. 規約の変更</h2>
-  <p>当方は本規約を変更できます。重要な変更は合理的な方法で周知します。変更後の利用により同意したものとみなします。</p>
+  <section>
+    <h2>11. 準拠法・裁判管轄</h2>
+    <p>
+      本規約は日本法に準拠します。本サービスに関して当社とユーザーの間で紛争が生じた場合、当社所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。
+    </p>
+  </section>
 
-  <h2>11. 準拠法・裁判管轄</h2>
-  <p>本規約は日本法に準拠します。本サービスに関して紛争が生じた場合、<em>東京地方裁判所または簡易裁判所</em>を第一審の専属的合意管轄裁判所とします（必要に応じて変更可）。</p>
-
-  <h2>12. 連絡先</h2>
-  <ul>
-    <li>運営者：<strong>Cpzenar Labs</strong></li>
-    <li>電子メール：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a></li>
-  </ul>
-</main>
-
-<footer>
-  <small>&copy; Cpzenar Labs</small>
-</footer>
+  <hr>
+  <footer>
+    <p>
+      事業者：CPZENAR Labs（個人事業）／
+      連絡先：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a><br>
+      特商法表記：<a href="/legal/tokushoho.html">/legal/tokushoho.html</a> ／
+      返金ポリシー：<a href="/legal/refund.html">/legal/refund.html</a> ／
+      プライバシー：<a href="/legal/privacy.html">/legal/privacy.html</a>
+    </p>
+  </footer>
+</div>
 </body>
 </html>
