@@ -3,99 +3,112 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0b0b0c">
   <title>Cpzenar – 無限スロット（追記/上書き/Done・フォールバックON）</title>
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <!-- 可能ならアイコンも用意（省略可）
+  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  -->
   <style>
-    :root{--bg:#0b0b0c;--fg:#f5f6f7;--mut:#a9acb2;--acc:#4f8cff;--ok:#00c37a;--warn:#ffb020;--bad:#ff5a5a;--line:#23252a}
+    :root { --bg:#0b0b0c; --fg:#f5f6f7; --mut:#a9acb2; --acc:#4f8cff; --ok:#00c37a; --warn:#ffb020; --bad:#ff5a5a; --panel:#141518; --border:#23252a; }
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    .wrap{max-width:900px;margin:0 auto;padding:16px;height:100dvh;display:flex;flex-direction:column;gap:10px}
-    h1{font-size:18px;margin:0}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,'Noto Sans JP',sans-serif}
+    .wrap{max-width:900px;margin:0 auto;padding:16px}
+    h1{font-size:18px;margin:0 0 10px}
     .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    input[type=text],input[type=search]{flex:1;min-width:240px;background:#141518;border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px}
-    textarea{width:100%;height:3.4em;min-height:3.4em;max-height:8em;background:#141518;border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px;resize:vertical}
-    .btn{background:#23252a;border:1px solid transparent;color:#e8eaed;border-radius:10px;padding:10px 12px;cursor:pointer}
+    input[type=text]{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--border);border-radius:12px;color:#fff;padding:10px}
+    .search{max-width:320px}
+    textarea{width:100%;min-height:3.2em;max-height:6.4em;resize:vertical;background:var(--panel);border:1px solid var(--border);border-radius:12px;color:#fff;padding:12px;margin-top:8px}
+    .btn{background:#23252a;border:none;color:#e8eaed;border-radius:10px;padding:10px 12px;cursor:pointer}
     .btn.acc{background:var(--acc);color:#fff}
     .btn.danger{background:#2b1619;border:1px solid #5a1f26}
-    .hint{color:var(--mut);font-size:12px}
-    .tabs{display:flex;gap:8px}
-    .tab{padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:#d6d7db;background:#15161b;display:flex;gap:8px;align-items:center}
+    .mini{font-size:12px;padding:6px 8px;margin-left:4px}
+    .hint{color:var(--mut);font-size:12px;margin:6px 0 2px}
+    .section{margin-top:12px}
+    .tabs{display:flex;gap:8px;margin-top:8px}
+    .tab{padding:8px 10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;color:#d6d7db;background:#15161b;display:flex;gap:8px;align-items:center}
     .tab.on{background:#1b1d24;border-color:#2b2f38}
-    
-    /* レイアウト：上に入力群＋タブ、下はスロット領域を最大化 */
-    .topArea{display:flex;flex-direction:column;gap:8px}
-    .slotsHeader{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .slotsSearch{flex:1}
-    .listBox{flex:1;min-height:0;border:1px solid var(--line);border-radius:12px;overflow:auto}
-    .empty{padding:18px;color:#aaa;text-align:center}
-
-    /* 行 */
+    .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .listshell{margin-top:10px;border:1px solid var(--border);border-radius:12px;height:58vh;min-height:280px;display:flex;flex-direction:column}
+    .listhead{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #1e2026;background:#121318}
+    .listwrap{flex:1;overflow:auto}
+    .list{min-height:100%}
     .item{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid #1e2026}
     .item:first-child{border-top:none}
     .item:hover{background:#121318}
     .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ts{color:#9aa0a6;font-size:12px}
-
+    .empty{padding:18px;color:#aaa;text-align:center}
     .toast{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45)}
     .toast.show{display:grid}
     .toast .box{background:#0e1713;border:1px solid #163d2d;padding:18px;border-radius:14px;color:#d9f7e9}
-
-    @media (max-width:560px){
-      .item{grid-template-columns:1fr auto}
-      .item .btn.danger{grid-column:2}
-    }
+    footer{background:#fafafa}
+    footer a{color:#0366d6;text-decoration:none}
+    footer a:hover{text-decoration:underline}
   </style>
 </head>
+
 <body>
 <div class="wrap">
   <h1>無限スロット（行クリック=追記 / 右の［上書き］・［✖］）</h1>
 
-  <!-- 入力行 -->
-  <div class="topArea">
-    <div class="row">
-      <input id="slotName" type="text" placeholder="新しいスロット名を入力して［追加］">
-      <button class="btn acc" id="addBtn">追加</button>
-      <button class="btn" id="exportBtn">エクスポート(JSON)</button>
-      <button class="btn" id="importBtn">インポート(JSON)</button>
-    </div>
+  <!-- 追加行 -->
+  <div class="row">
+    <input id="slotName" type="text" placeholder="新しいスロット名を入力して［追加］">
+    <button class="btn acc" id="addBtn">追加</button>
+    <button class="btn" id="exportBtn">エクスポート(JSON)</button>
+    <button class="btn" id="importBtn">インポート(JSON)</button>
+  </div>
 
-    <!-- タブ（この行を入力行の直下に） -->
+  <!-- スロット関連（まとめて配置） -->
+  <div class="section">
     <div class="tabs">
       <div class="tab on" data-tab="slots">スロット</div>
       <div class="tab" data-tab="stash">
         一時保存（上書きの旧版）
-        <span style="margin-left:8px"><button class="btn mini danger" id="clearStash">一時保存を空にする</button></span>
+        <span class="right"><button class="btn mini danger" id="clearStash">一時保存を空にする</button></span>
       </div>
       <div class="tab" data-tab="done">
         Done（✖で退避）
-        <span style="margin-left:8px"><button class="btn mini danger" id="clearDone">Doneを空にする</button></span>
+        <span class="right"><button class="btn mini danger" id="clearDone">Doneを空にする</button></span>
       </div>
     </div>
 
-    <!-- 3行テキストエリア＋説明 -->
-    <textarea id="note" placeholder="★“追記したいテキスト”を書いておくと、スロット行クリックでそのまま追記されます（フォールバックON）。クリップボードが読める場合は、まずクリップボードが使われます。"></textarea>
-    <div class="hint">保存時は <strong>クリップボード</strong> → 空/不可なら <strong>上のテキストエリア</strong> を使います。</div>
-
-    <!-- 検索と件数 -->
-    <div class="slotsHeader">
-      <input class="slotsSearch" id="searchBox" type="search" placeholder="スロット名で検索（インクリメンタル）">
-      <span id="countLabel" class="hint">0 件</span>
+    <div class="listshell">
+      <div class="listhead">
+        <input class="search" id="searchInput" type="text" placeholder="スロット名で検索（前方一致・空で全件）">
+        <span class="right" style="color:#9aa0a6;font-size:12px">保存数が多くても快適にスクロールできます</span>
+      </div>
+      <div class="listwrap">
+        <div id="list" class="list"></div>
+        <div id="empty" class="empty" style="display:none">項目がありません</div>
+      </div>
     </div>
   </div>
 
-  <!-- スロット一覧（高さ最大化） -->
-  <div id="listBox" class="listBox">
-    <div id="list"></div>
-    <div id="empty" class="empty" style="display:none">項目がありません</div>
-  </div>
+  <!-- フォールバック用の小さめテキスト欄 -->
+  <textarea id="note" placeholder="★この欄に“追記したいテキスト”を書いておくと、行クリックでそのまま追記（フォールバックON）。クリップボードが読める場合は、先にクリップボードを使用します。"></textarea>
+  <div class="hint">保存時の入力優先順：<strong>クリップボード</strong> →（空/不可なら）<strong>このテキスト欄</strong></div>
 </div>
 
 <div class="toast" id="toast"><div class="box" id="toastMsg">OK</div></div>
 
+<!-- フッター（ご指定の内容） -->
+<footer style="margin-top:48px;padding:16px 12px;border-top:1px solid #eee;font:14px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans JP',sans-serif;background:#fafafa">
+  <nav style="display:flex;gap:16px;flex-wrap:wrap">
+    <a href="/legal/tokushoho.html">特定商取引法に基づく表記</a>
+    <a href="/legal/refund.html">返金・キャンセルポリシー</a>
+    <a href="/legal/terms.html">利用規約</a>
+    <a href="/legal/privacy.html">プライバシーポリシー</a>
+    <a href="mailto:cpzenar.contact@gmail.com">お問い合わせ</a>
+    <span style="margin-left:auto;color:#666">© CPZENAR Labs</span>
+  </nav>
+</footer>
+
 <script>
 /* ===== 設定 ===== */
-const USE_FALLBACK = true; // クリップボード不可のときテキストエリアを使う
+const USE_FALLBACK = true; // フォールバックON
 
 /* ===== IndexedDB (slots / stash / done) ===== */
 const DBN='cpzenar_db_v3';
@@ -110,7 +123,7 @@ function openDB(){
           const os=d.createObjectStore(s,{keyPath:'id',autoIncrement:true});
           os.createIndex('by_updated','updatedAt',{unique:false});
           os.createIndex('by_name','name',{unique:false});
-          os.createIndex('by_saved','savedAt',{unique:false});
+          os.createIndex('by_saved','savedAt',{unique:false}); // stash/done向け
         }
       });
     };
@@ -170,7 +183,7 @@ async function addSlotByName(name, content){
   const rec={ name, content, updatedAt:now() };
   await put(STORES.slots, rec);
 }
-async function appendToSlot(rec){ // デフォルト=追記
+async function appendToSlot(rec){
   const text=await getInputText();
   if(!text){ toast('保存できるテキストがありません（クリップボード/テキスト欄とも空）'); return; }
   const sep = rec.content && !rec.content.endsWith('\n') ? '\n' : '';
@@ -179,7 +192,7 @@ async function appendToSlot(rec){ // デフォルト=追記
   await put(STORES.slots, rec);
   toast('追記して保存しました');
 }
-async function overwriteSlot(rec){ // 右の［上書き］
+async function overwriteSlot(rec){
   const text=await getInputText();
   if(!text){ toast('保存できるテキストがありません'); return; }
   const stashRec={ name:rec.name, content:rec.content, originId:rec.id, savedAt:now(), updatedAt:now() };
@@ -189,7 +202,7 @@ async function overwriteSlot(rec){ // 右の［上書き］
   await put(STORES.slots, rec);
   toast('上書きしました（旧版は一時保存へ）');
 }
-async function removeToDone(rec){ // 右の［✖］
+async function removeToDone(rec){
   const doneRec={ name:rec.name, content:rec.content, originId:rec.id, savedAt:now(), updatedAt:now() };
   await put(STORES.done, doneRec);
   await del(STORES.slots, rec.id);
@@ -206,10 +219,9 @@ const $import=document.getElementById('importBtn');
 const $tabs=document.querySelectorAll('.tab');
 const $clearStash=document.getElementById('clearStash');
 const $clearDone=document.getElementById('clearDone');
-const $search=document.getElementById('searchBox');
-const $count=document.getElementById('countLabel');
+const $search=document.getElementById('searchInput');
 let currentTab='slots';
-let currentData=[]; // 表示用キャッシュ
+let searchWord='';
 
 $name.value = localStorage.getItem('last_slot_name')||'';
 $name.addEventListener('input',()=>localStorage.setItem('last_slot_name',$name.value));
@@ -226,11 +238,59 @@ $add.onclick=async()=>{
   toast('作成しました');
 };
 
-$tabs.forEach(t=>t.addEventListener('click',()=>{
-  $tabs.forEach(x=>x.classList.remove('on')); t.classList.add('on');
-  currentTab=t.dataset.tab;
-  render();
-}));
+$search.addEventListener('input', ()=>{ searchWord=$search.value.trim().toLowerCase(); render(); });
+
+async function render(){
+  let data=[];
+  if(currentTab==='slots') data=await getAll(STORES.slots);
+  if(currentTab==='stash') data=await getAll(STORES.stash,'by_saved','prev');
+  if(currentTab==='done')  data=await getAll(STORES.done,'by_saved','prev');
+
+  if(currentTab==='slots' && searchWord){
+    data = data.filter(x => (x.name||'').toLowerCase().startsWith(searchWord));
+  }
+
+  $list.innerHTML='';
+  if(!data.length){ $empty.style.display='block'; return; }
+  $empty.style.display='none';
+
+  for(const rec of data){
+    const row=document.createElement('div'); row.className='item';
+    const left=document.createElement('div');
+    const name=document.createElement('div'); name.className='name'; name.textContent=rec.name;
+    const ts=document.createElement('div'); ts.className='ts';
+    ts.textContent = currentTab==='slots' ? `更新: ${fmtTs(rec.updatedAt)}` : `退避: ${fmtTs(rec.savedAt)}`;
+    left.appendChild(name); left.appendChild(ts);
+
+    const btnOverwrite=document.createElement('button');
+    btnOverwrite.className='btn mini'; btnOverwrite.textContent='上書き';
+
+    const btnDel=document.createElement('button');
+    btnDel.className='btn mini danger'; btnDel.textContent='✖';
+
+    if(currentTab==='slots'){
+      row.style.cursor='pointer';
+      row.addEventListener('click', async (e)=>{
+        if(e.target===btnOverwrite || e.target===btnDel) return;
+        await appendToSlot(rec);
+        await render();
+      });
+      btnOverwrite.onclick=async (e)=>{ e.stopPropagation(); await overwriteSlot(rec); await render(); };
+      btnDel.onclick=async (e)=>{ e.stopPropagation(); await removeToDone(rec); await render(); };
+    } else {
+      btnOverwrite.disabled=true; btnDel.disabled=true;
+      btnOverwrite.title='このタブでは操作できません';
+      btnDel.title='このタブでは操作できません';
+    }
+
+    row.appendChild(left);
+    row.appendChild(btnOverwrite);
+    row.appendChild(btnDel);
+    $list.appendChild(row);
+  }
+}
+
+$tabs.forEach(t=>t.addEventListener('click',()=>{ $tabs.forEach(x=>x.classList.remove('on')); t.classList.add('on'); currentTab=t.dataset.tab; render(); }));
 
 $clearStash?.addEventListener('click', async (e)=>{ e.stopPropagation(); if(confirm('一時保存をすべて削除します。よろしいですか？')){ await clearStore(STORES.stash); toast('一時保存を空にしました'); render(); }});
 $clearDone?.addEventListener('click', async (e)=>{ e.stopPropagation(); if(confirm('Doneをすべて削除します。よろしいですか？')){ await clearStore(STORES.done); toast('Doneを空にしました'); render(); }});
@@ -258,65 +318,14 @@ $import.onclick=async()=>{
   inp.click();
 };
 
-/* 検索・描画 */
-$search.addEventListener('input', ()=>applyFilter());
-
-function applyFilter(){
-  const q=($search.value||'').toLowerCase();
-  const view = q ? currentData.filter(r=>String(r.name).toLowerCase().includes(q)) : currentData;
-  $count.textContent = `${view.length} 件`;
-  paint(view);
-}
-function paint(data){
-  $list.innerHTML='';
-  if(!data.length){ $list.parentElement.scrollTop=0; $list.style.display='none'; $empty.style.display='block'; return; }
-  $list.style.display='block'; $empty.style.display='none';
-  for(const rec of data){
-    const row=document.createElement('div'); row.className='item';
-    const left=document.createElement('div');
-    const name=document.createElement('div'); name.className='name'; name.textContent=rec.name;
-    const ts=document.createElement('div'); ts.className='ts';
-    ts.textContent = currentTab==='slots' ? `更新: ${fmtTs(rec.updatedAt)}` : `退避: ${fmtTs(rec.savedAt)}`;
-    left.appendChild(name); left.appendChild(ts);
-
-    const btnOverwrite=document.createElement('button'); btnOverwrite.className='btn mini'; btnOverwrite.textContent='上書き';
-    const btnDel=document.createElement('button'); btnDel.className='btn mini danger'; btnDel.textContent='✖';
-
-    if(currentTab==='slots'){
-      row.style.cursor='pointer';
-      row.addEventListener('click', async (e)=>{
-        if(e.target===btnOverwrite || e.target===btnDel) return;
-        await appendToSlot(rec); await render();
-      });
-      btnOverwrite.onclick=async (e)=>{ e.stopPropagation(); await overwriteSlot(rec); await render(); };
-      btnDel.onclick=async (e)=>{ e.stopPropagation(); await removeToDone(rec); await render(); };
-    }else{
-      btnOverwrite.disabled=true; btnDel.disabled=true;
-      btnOverwrite.title='このタブでは操作できません'; btnDel.title='このタブでは操作できません';
-    }
-
-    row.appendChild(left); row.appendChild(btnOverwrite); row.appendChild(btnDel);
-    $list.appendChild(row);
-  }
-}
-async function render(){
-  let data=[];
-  if(currentTab==='slots') data=await getAll(STORES.slots);
-  if(currentTab==='stash') data=await getAll(STORES.stash,'by_saved','prev');
-  if(currentTab==='done')  data=await getAll(STORES.done,'by_saved','prev');
-  currentData=data;
-  applyFilter();
-}
-
 /* 起動 */
 (async function init(){
-  try{
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-    }
-  }catch{}
   await openDB();
   await render();
+  // PWA用SW登録（存在すれば）
+  if ('serviceWorker' in navigator) {
+    try { await navigator.serviceWorker.register('/service-worker.js'); } catch {}
+  }
 })();
 </script>
 </body>
