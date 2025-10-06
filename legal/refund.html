@@ -1,72 +1,102 @@
-<!doctype html><meta charset="utf-8">
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>返金・キャンセルポリシー | CPZENAR</title>
 <style>
-  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;line-height:1.8;margin:2rem;color:#222}
-  h1{font-size:1.6rem;margin-bottom:1rem}
-  h2{font-size:1.15rem;margin-top:2rem}
-  a{color:#0b6; text-decoration:none}
-  a:hover{text-decoration:underline}
-  .note{color:#555}
+body{font:15px/1.8 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;margin:0;color:#222}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 16px}
+h2{font-size:18px;margin:24px 0 8px}
+section{margin:18px 0}
+ul{padding-left:1.2em}
+small, .muted{color:#666}
+a{color:#0366d6;text-decoration:none}
+a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #eee;margin:24px 0}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid #eee;color:#666}
 </style>
-<h1>返金・キャンセルポリシー</h1>
-<p class="note">最終更新日：2025-10-06</p>
+</head>
+<body>
+<div class="wrap">
+  <h1>返金・キャンセルポリシー</h1>
+  <p class="muted">最終更新日：2025-10-06</p>
 
-<p>本ページは、CPZENAR（以下「本サービス」）の課金・返金・キャンセルに関する方針を定めるものです。</p>
+  <section>
+    <h2>概要</h2>
+    <p>
+      CPZENAR（以下「本サービス」）の有料版は
+      <strong>月額サブスクリプション（内税・¥299/月）</strong>のみを提供します。年払い・買い切りプランはありません。
+      決済は Stripe を通じて行われます。
+    </p>
+  </section>
 
-<h2>1. 料金と課税</h2>
-<ul>
-  <li>月額料金は <strong>299円（税込・内税）</strong> です。</li>
-  <li>当社は Stripe の自動税計算（Stripe Tax）を利用し、適用される消費税（原則10%）を税込価格の内数として処理します。</li>
-  <li>請求・領収明細上の課税表示は Stripe の仕様に基づきます。</li>
-</ul>
+  <section>
+    <h2>課金・更新</h2>
+    <ul>
+      <li>請求サイクルは 1 か月です。初回課金日を起点として毎月自動更新されます。</li>
+      <li>表示価格は<strong>消費税込（内税）</strong>です。Stripe 手数料等の決済コストは当社負担です。</li>
+      <li>請求書や領収書は Stripe から自動発行されます。</li>
+    </ul>
+  </section>
 
-<h2>2. 課金タイミング／利用期間</h2>
-<ul>
-  <li>課金は <strong>毎月前払い</strong> です。支払いが完了すると、次回更新日（翌月同日またはStripeのルールに基づく日）まで本サービスを利用できます。</li>
-  <li>月の途中で解約いただいた場合でも、その期間の利用権は更新日まで維持され、<strong>日割り返金は行いません</strong>。</li>
-</ul>
+  <section>
+    <h2>キャンセル（解約）</h2>
+    <ul>
+      <li>解約はいつでも可能です。次回更新の前に解約すれば、<strong>当該サイクル終了まで利用可能</strong>で、その後は自動更新されません。</li>
+      <li>月途中の解約に対する<strong>日割り返金は行いません</strong>。</li>
+    </ul>
+  </section>
 
-<h2>3. キャンセル（解約）</h2>
-<ul>
-  <li>いつでも解約できます。解約は次回の自動課金を停止するもので、すでに支払い済みの当月分については返金対象外です。</li>
-</ul>
+  <section>
+    <h2>返金ポリシー</h2>
+    <p>以下の限定的な場合にのみ返金または期間延長を行います。</p>
+    <ol>
+      <li><strong>法令に基づき返金義務がある場合</strong></li>
+      <li><strong>二重課金・誤課金</strong>（家族カード等の正当な利用を除く）。Stripe の決済記録で確認後、重複分を返金します。</li>
+      <li>
+        <strong>重大障害により全ユーザーが 48 時間以上連続で主要機能を利用できなかった場合</strong><br>
+        かつ<strong>当社のアプリケーション不具合または当社管理のインフラ構成が主因</strong>と判定でき、回避手段（オフライン利用や代替導線）が実質的に存在しなかったとき、
+        <u>影響のあった期間に相当する利用期間の延長</u>または<u>同等額の日割り返金</u>のいずれかを提供します。
+      </li>
+    </ol>
+    <p class="muted">
+      ※ 上記③には、インターネット回線・端末/OS/ブラウザ・ブラウザ拡張・ウイルス対策ソフト・企業/学校のポリシー・Stripe/各クラウド等の外部サービス障害は含みません。<br>
+      ※ 本サービスはオフラインでも主要機能が動作する設計のため、決済・認証等の外部サービス障害のみで「全ユーザーが主要機能を継続的に使えなくなる」ケースは想定外です。
+    </p>
+  </section>
 
-<h2>4. 原則として返金は行いません</h2>
-<ul>
-  <li><strong>原則として返金はいたしません。</strong>ただし、以下の例外を認めます。</li>
-  <li>（1）重複課金／誤課金など、当社または決済の明確な過誤によるもの</li>
-  <li>（2）不正利用が疑われる決済で、調査の上当社が妥当と判断したもの</li>
-</ul>
-<p>上記に該当する場合は、Stripe の決済履歴を確認の上、個別に返金対応します。</p>
+  <section>
+    <h2>返金・延長の申請手続き</h2>
+    <ul>
+      <li>申請先：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a></li>
+      <li>期限：事象発生日または課金日の<strong>30日以内</strong></li>
+      <li>必要情報：購入メールアドレス／決済日時／事象の概要／再現に用いた端末・OS・ブラウザ／スクリーンショット等の客観的資料</li>
+      <li>審査の結果、対象外と判断される場合があります。</li>
+    </ul>
+  </section>
 
-<h2>5. 障害発生時の取り扱い（責任範囲と任意救済）</h2>
-<p>当社は、本サービスの提供において合理的な範囲で自社システムの安定運用に努めます。
-決済代行（Stripe 等）、CDN、DNS、アプリ配信プラットフォームその他の
-第三者サービスに起因する不具合・遅延・停止は、当社の責に帰すべき事由には該当せず、
-返金義務は負いません。</p>
+  <section>
+    <h2>クーリング・オフについて</h2>
+    <p>本サービスはインターネットを通じて提供する役務であり、特定商取引法上のクーリング・オフ制度の適用対象ではありません。</p>
+  </section>
 
-<p>ただし、第三者サービスの障害により「購入の成立確認」や
-「購入直後の有効化／復元」が遅延し、ユーザーが有料機能を利用できなかった場合には、
-当社の裁量により、顧客残高への<strong>クレジット付与</strong>等の救済を行うことがあります。
-この救済は義務ではなく、個別の状況を総合考慮して判断します。</p>
+  <section>
+    <h2>ポリシーの変更</h2>
+    <p>本ポリシーは予告なく更新されることがあります。重要な変更はサイト内掲示やメールで通知します。</p>
+  </section>
 
-<p>当社システム（当社が合理的に管理可能な範囲）に起因して、
-有料ユーザーの本来利用できる有料機能が広範にわたり24時間以上連続して
-利用不能であったことが客観的に確認できる場合には、当社の裁量にて
-当該期間相当のクレジット付与を行うことがあります。現金での返金は原則行いません。</p>
-
-<p><em>除外：</em> 利用者の端末・OS・ネットワーク・設定、第三者ソフトや
-アプリ配信ストアの不具合、不可抗力（天災等）、およびオフラインで利用可能な
-機能が正常に動作している場合は対象外です。</p>
-
-
-<h2>6. クーリング・オフ</h2>
-<p>インターネットを通じた即時利用のデジタルサービスであるため、特定商取引法上のクーリング・オフは適用されません。</p>
-
-<h2>7. お問い合わせ</h2>
-<p>本ポリシーに関するお問い合わせや、例外的な返金のご相談は以下までご連絡ください。</p>
-<ul>
-  <li>メール：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a></li>
-  <li>特商法表記：<a href="/legal/tokushoho.html">/legal/tokushoho.html</a></li>
-</ul>
-<p class="note">本ポリシーは、予告なく改定される場合があります。改定時は本ページの更新をもって公示します。</p>
+  <hr>
+  <footer>
+    <p>
+      事業者：CPZENAR Labs（個人事業）／
+      連絡先：<a href="mailto:cpzenar.contact@gmail.com">cpzenar.contact@gmail.com</a><br>
+      特商法表記：<a href="/legal/tokushoho.html">/legal/tokushoho.html</a> ／
+      プライバシー：<a href="/legal/privacy.html">/legal/privacy.html</a> ／
+      利用規約：<a href="/legal/terms.html">/legal/terms.html</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>
