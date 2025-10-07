@@ -1,59 +1,73 @@
 <!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Cpzenar – 無限スロット（追記/上書き/Done・フォールバックON）</title>
-  <meta name="theme-color" content="#0b0b0c">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <!-- 可能ならアイコンも用意（省略可）
-  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
-  -->
-  <style>
-    :root { --bg:#0b0b0c; --fg:#f5f6f7; --mut:#a9acb2; --acc:#4f8cff; --ok:#00c37a; --warn:#ffb020; --bad:#ff5a5a; --panel:#141518; --border:#23252a; }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,'Noto Sans JP',sans-serif}
-    .wrap{max-width:900px;margin:0 auto;padding:16px}
-    h1{font-size:18px;margin:0 0 10px}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    input[type=text]{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--border);border-radius:12px;color:#fff;padding:10px}
-    .search{max-width:320px}
-    textarea{width:100%;min-height:3.2em;max-height:6.4em;resize:vertical;background:var(--panel);border:1px solid var(--border);border-radius:12px;color:#fff;padding:12px;margin-top:8px}
-    .btn{background:#23252a;border:none;color:#e8eaed;border-radius:10px;padding:10px 12px;cursor:pointer}
-    .btn.acc{background:var(--acc);color:#fff}
-    .btn.danger{background:#2b1619;border:1px solid #5a1f26}
-    .mini{font-size:12px;padding:6px 8px;margin-left:4px}
-    .hint{color:var(--mut);font-size:12px;margin:6px 0 2px}
-    .section{margin-top:12px}
-    .tabs{display:flex;gap:8px;margin-top:8px}
-    .tab{padding:8px 10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;color:#d6d7db;background:#15161b;display:flex;gap:8px;align-items:center}
-    .tab.on{background:#1b1d24;border-color:#2b2f38}
-    .right{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .listshell{margin-top:10px;border:1px solid var(--border);border-radius:12px;height:58vh;min-height:280px;display:flex;flex-direction:column}
-    .listhead{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #1e2026;background:#121318}
-    .listwrap{flex:1;overflow:auto}
-    .list{min-height:100%}
-    .item{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid #1e2026}
-    .item:first-child{border-top:none}
-    .item:hover{background:#121318}
-    .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ts{color:#9aa0a6;font-size:12px}
-    .empty{padding:18px;color:#aaa;text-align:center}
-    .toast{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45)}
-    .toast.show{display:grid}
-    .toast .box{background:#0e1713;border:1px solid #163d2d;padding:18px;border-radius:14px;color:#d9f7e9}
-    footer{background:#fafafa}
-    footer a{color:#0366d6;text-decoration:none}
-    footer a:hover{text-decoration:underline}
-  </style>
-</head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cpzenar – 無限スロット（追記/上書き/Done・フォールバックON）</title>
+<style>
+  :root { --bg:#0b0b0c; --fg:#f5f6f7; --mut:#a9acb2; --acc:#4f8cff; --ok:#00c37a; --warn:#ffb020; --bad:#ff5a5a; --card:#141518; --line:#23252a; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,'Noto Sans JP',sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:14px}
+  header{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  header h1{font-size:18px;margin:0}
+  header .pill{font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:#15161b;color:#d6d7db}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  input[type=text]{flex:1;min-width:240px;background:var(--card);border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px}
+  textarea{width:100%;min-height:3.2em;max-height:9em;resize:vertical;background:var(--card);border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px}
+  .btn{background:#23252a;border:none;color:#e8eaed;border-radius:10px;padding:10px 12px;cursor:pointer}
+  .btn.acc{background:var(--acc);color:#fff}
+  .btn.danger{background:#2b1619;border:1px solid #5a1f26}
+  .btn.ghost{background:#15161b;color:#d6d7db;border:1px solid var(--line)}
+  .hint{color:var(--mut);font-size:12px;margin-top:4px}
+  .bar{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .tabs{display:flex;gap:8px}
+  .tab{padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:#d6d7db;background:#15161b;display:flex;gap:8px;align-items:center}
+  .tab.on{background:#1b1d24;border-color:#2b2f38}
+  .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .listWrap{margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .list{max-height:68vh;overflow:auto}
+  .item{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:10px 12px;border-top:1px solid #1e2026}
+  .item:first-child{border-top:none}
+  .item:hover{background:#121318}
+  .name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ts{color:#9aa0a6;font-size:12px}
+  .mini{font-size:12px;padding:6px 8px;margin-left:4px}
+  .empty{padding:18px;color:#aaa;text-align:center}
+  .toast{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.45);z-index:50}
+  .toast.show{display:grid}
+  .toast .box{background:#0e1713;border:1px solid #163d2d;padding:18px;border-radius:14px;color:#d9f7e9}
 
-<body>
+  /* Paywall modal */
+  .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.55);z-index:60}
+  .modal.show{display:grid}
+  .sheet{width:min(560px,92vw);background:#0f1116;border:1px solid #2b2f38;border-radius:16px;padding:18px}
+  .sheet h2{margin:0 0 8px;font-size:18px}
+  .sheet p{margin:6px 0 10px;color:#cfd2d8}
+  .sheet .row{margin:10px 0}
+  .badge{display:inline-block;background:#1b2030;border:1px solid #2b2f38;color:#bcd0ff;padding:2px 8px;border-radius:999px;font-size:12px}
+  .price{font-weight:700}
+  .dim{color:#a9acb2}
+  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#151922;border:1px solid #2b2f38;border-radius:6px;padding:2px 6px}
+
+  /* footer */
+  footer{margin-top:24px;padding:16px 12px;border-top:1px solid #2b2f38;font:14px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans JP',sans-serif;background:#0f1116}
+  footer nav{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  footer a{color:#9fb4ff;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  footer .copy{margin-left:auto;color:#666}
+</style>
+
 <div class="wrap">
-  <h1>無限スロット（行クリック=追記 / 右の［上書き］・［✖］）</h1>
+  <header>
+    <h1>無限スロット（行クリック=追記 / 右の［上書き］・［✖］）</h1>
+    <span class="pill" id="planBadge">Free: スロット上限 1</span>
+    <span class="right" style="margin-left:auto;gap:8px;display:flex;align-items:center">
+      <input id="search" type="text" placeholder="スロット名を検索">
+      <button class="btn ghost" id="accountBtn" title="メールを設定（任意）">アカウント</button>
+      <button class="btn acc" id="upgradeBtn" title="Proへアップグレード">Proにする</button>
+    </span>
+  </header>
 
-  <!-- 追加行 -->
   <div class="row">
     <input id="slotName" type="text" placeholder="新しいスロット名を入力して［追加］">
     <button class="btn acc" id="addBtn">追加</button>
@@ -61,57 +75,78 @@
     <button class="btn" id="importBtn">インポート(JSON)</button>
   </div>
 
-  <!-- スロット関連（まとめて配置） -->
-  <div class="section">
+  <div class="bar">
     <div class="tabs">
       <div class="tab on" data-tab="slots">スロット</div>
-      <div class="tab" data-tab="stash">
-        一時保存（上書きの旧版）
-        <span class="right"><button class="btn mini danger" id="clearStash">一時保存を空にする</button></span>
-      </div>
-      <div class="tab" data-tab="done">
-        Done（✖で退避）
-        <span class="right"><button class="btn mini danger" id="clearDone">Doneを空にする</button></span>
-      </div>
+      <div class="tab" data-tab="stash">一時保存（上書きの旧版）</div>
+      <div class="tab" data-tab="done">Done（✖で退避）</div>
     </div>
-
-    <div class="listshell">
-      <div class="listhead">
-        <input class="search" id="searchInput" type="text" placeholder="スロット名で検索（前方一致・空で全件）">
-        <span class="right" style="color:#9aa0a6;font-size:12px">保存数が多くても快適にスクロールできます</span>
-      </div>
-      <div class="listwrap">
-        <div id="list" class="list"></div>
-        <div id="empty" class="empty" style="display:none">項目がありません</div>
-      </div>
+    <div class="right">
+      <button class="btn mini danger" id="clearStash" title="一時保存を空にする">一時保存を空に</button>
+      <button class="btn mini danger" id="clearDone" title="Doneを空にする">Doneを空に</button>
     </div>
   </div>
 
-  <!-- フォールバック用の小さめテキスト欄 -->
-  <textarea id="note" placeholder="★この欄に“追記したいテキスト”を書いておくと、行クリックでそのまま追記（フォールバックON）。クリップボードが読める場合は、先にクリップボードを使用します。"></textarea>
-  <div class="hint">保存時の入力優先順：<strong>クリップボード</strong> →（空/不可なら）<strong>このテキスト欄</strong></div>
+  <textarea id="note" placeholder="★“追記したいテキスト”を置いておくと、スロット行クリックで追記されます（フォールバックON）。クリップボードが読める場合は、まずクリップボードが使われます。"></textarea>
+  <div class="hint">保存時は<strong>クリップボード</strong>→空/不可なら<strong>上のテキスト欄</strong>を使います。</div>
+
+  <div class="listWrap">
+    <div id="list" class="list"></div>
+    <div id="empty" class="empty" style="display:none">項目がありません</div>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/legal/tokushoho.html">特定商取引法に基づく表記</a>
+      <a href="/legal/refund.html">返金・キャンセルポリシー</a>
+      <a href="/legal/terms.html">利用規約</a>
+      <a href="/legal/privacy.html">プライバシーポリシー</a>
+      <a href="mailto:cpzenar.contact@gmail.com">お問い合わせ</a>
+      <span class="copy">© CPZENAR Labs</span>
+    </nav>
+  </footer>
 </div>
 
 <div class="toast" id="toast"><div class="box" id="toastMsg">OK</div></div>
 
-<!-- フッター（ご指定の内容） -->
-<footer style="margin-top:48px;padding:16px 12px;border-top:1px solid #eee;font:14px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans JP',sans-serif;background:#fafafa">
-  <nav style="display:flex;gap:16px;flex-wrap:wrap">
-    <a href="/legal/tokushoho.html">特定商取引法に基づく表記</a>
-    <a href="/legal/refund.html">返金・キャンセルポリシー</a>
-    <a href="/legal/terms.html">利用規約</a>
-    <a href="/legal/privacy.html">プライバシーポリシー</a>
-    <a href="mailto:cpzenar.contact@gmail.com">お問い合わせ</a>
-    <span style="margin-left:auto;color:#666">© CPZENAR Labs</span>
-  </nav>
-</footer>
+<div class="modal" id="paywall">
+  <div class="sheet">
+    <h2>Pro でスロット無制限</h2>
+    <p><span class="badge">日本限定</span> <span class="price">¥298/月（内税）</span> – 無料版はスロット <b>1</b> 個までです。</p>
+    <ul class="dim" style="margin:8px 0 12px; padding-left:18px; line-height:1.7">
+      <li>広告なし・完全ローカル保存</li>
+      <li>上書き・一時保存・Done で安心管理</li>
+      <li>メール往復なしのセルフ運用設計</li>
+    </ul>
+    <div class="row">
+      <button class="btn" id="laterBtn">今はやめる</button>
+      <button class="btn acc" id="payBtn">Proにアップグレード（¥298/月）</button>
+    </div>
+    <div class="dim" style="font-size:12px;margin-top:6px">
+      ※ 初回決済から7日以内はアプリ内から全額返金可。<br>
+      ※ <span class="kbd">設定 &gt; アカウント</span>からメール設定で購入とアカウント紐付け。
+    </div>
+  </div>
+</div>
 
 <script>
-/* ===== 設定 ===== */
-const USE_FALLBACK = true; // フォールバックON
+/* ===== 設定・状態 ===== */
+const USE_FALLBACK = true;
+const FREE_LIMIT   = 1;
+const PRO_LIMIT    = 999;
+const API_BASE     = "https://cpzenar-api.cpzenar-contact.workers.dev"; // ← あなたのAPI
+const CHECKOUT_URL = "https://example.com/checkout"; // ← Stripe Checkout のURLに差し替え
 
-/* ===== IndexedDB (slots / stash / done) ===== */
-const DBN='cpzenar_db_v3';
+function isEntitled(){ return localStorage.getItem('entitled') === 'true'; }
+function slotsLimit(){ return isEntitled() ? PRO_LIMIT : FREE_LIMIT; }
+function setEntitled(v){
+  localStorage.setItem('entitled', v ? 'true' : 'false');
+  document.getElementById('planBadge').textContent =
+    v ? 'Pro: スロット上限 無制限' : 'Free: スロット上限 1';
+}
+
+/* ===== IndexedDB ===== */
+const DBN='cpzenar_db_v4';
 const STORES={ slots:'slots', stash:'stash', done:'done' };
 let db;
 function openDB(){
@@ -123,7 +158,7 @@ function openDB(){
           const os=d.createObjectStore(s,{keyPath:'id',autoIncrement:true});
           os.createIndex('by_updated','updatedAt',{unique:false});
           os.createIndex('by_name','name',{unique:false});
-          os.createIndex('by_saved','savedAt',{unique:false}); // stash/done向け
+          os.createIndex('by_saved','savedAt',{unique:false});
         }
       });
     };
@@ -156,6 +191,13 @@ async function getByName(name){
     req.onerror=e=>rej(e);
   });
 }
+async function countSlots(){
+  await openDB();
+  return new Promise((res,rej)=>{
+    const t=db.transaction(STORES.slots,'readonly'); const os=t.objectStore(STORES.slots);
+    const rq=os.count(); rq.onsuccess=()=>res(rq.result||0); rq.onerror=e=>rej(e);
+  });
+}
 async function put(store, val){ await tx(store,'readwrite',(os)=>os.put(val)); }
 async function del(store, id){ await tx(store,'readwrite',(os)=>os.delete(id)); }
 async function clearStore(store){ await tx(store,'readwrite',(os)=>os.clear()); }
@@ -164,24 +206,40 @@ async function clearStore(store){ await tx(store,'readwrite',(os)=>os.clear()); 
 const now=()=>Date.now();
 function fmtTs(ms){ try{ return new Date(ms).toLocaleString(); }catch{return ''} }
 function toast(msg){ const t=document.getElementById('toast'), m=document.getElementById('toastMsg'); m.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1200); }
+function showPaywall(){ document.getElementById('paywall').classList.add('show'); }
+function hidePaywall(){ document.getElementById('paywall').classList.remove('show'); }
 
-/* クリップボード→フォールバック順で取得 */
+async function refreshEntitlementIfPossible(){
+  const email=(localStorage.getItem('user_email')||'').trim().toLowerCase();
+  if(!email) return;
+  try{
+    const r=await fetch(`${API_BASE}/entitlement?email=${encodeURIComponent(email)}`);
+    const j=await r.json();
+    setEntitled(j?.entitled===true);
+  }catch(_){}
+}
+
+/* 入力テキスト（クリップボード→フォールバック） */
 async function getInputText(){
   try{
     const s=await navigator.clipboard.readText();
     if (s && s.trim()) return s;
   }catch{}
-  if (USE_FALLBACK) {
-    const fb=document.getElementById('note').value||'';
-    if (fb && fb.trim()) return fb;
-  }
+  const fb=document.getElementById('note').value||'';
+  if (fb && fb.trim()) return fb;
   return '';
 }
 
 /* ===== Core ops ===== */
 async function addSlotByName(name, content){
+  const current=await countSlots();
+  if(current >= slotsLimit()){
+    showPaywall();
+    return false;
+  }
   const rec={ name, content, updatedAt:now() };
   await put(STORES.slots, rec);
+  return true;
 }
 async function appendToSlot(rec){
   const text=await getInputText();
@@ -219,12 +277,18 @@ const $import=document.getElementById('importBtn');
 const $tabs=document.querySelectorAll('.tab');
 const $clearStash=document.getElementById('clearStash');
 const $clearDone=document.getElementById('clearDone');
-const $search=document.getElementById('searchInput');
+const $search=document.getElementById('search');
+const $upgrade=document.getElementById('upgradeBtn');
+const $account=document.getElementById('accountBtn');
+const $later=document.getElementById('laterBtn');
+const $pay=document.getElementById('payBtn');
+
 let currentTab='slots';
-let searchWord='';
+let currentFilter='';
 
 $name.value = localStorage.getItem('last_slot_name')||'';
 $name.addEventListener('input',()=>localStorage.setItem('last_slot_name',$name.value));
+$search.addEventListener('input',()=>{ currentFilter=($search.value||'').trim().toLowerCase(); render(); });
 
 $add.onclick=async()=>{
   const nm=($name.value||'').trim(); if(!nm){ toast('スロット名を入力'); return; }
@@ -232,13 +296,12 @@ $add.onclick=async()=>{
   if(dup.length){ toast('同名のスロットがあります'); return; }
   const text=await getInputText();
   if(!text){ toast('保存できるテキストがありません'); return; }
-  await addSlotByName(nm, text);
+  const ok=await addSlotByName(nm, text);
+  if(!ok) return;
   $name.value=''; localStorage.removeItem('last_slot_name');
   await render();
   toast('作成しました');
 };
-
-$search.addEventListener('input', ()=>{ searchWord=$search.value.trim().toLowerCase(); render(); });
 
 async function render(){
   let data=[];
@@ -246,8 +309,9 @@ async function render(){
   if(currentTab==='stash') data=await getAll(STORES.stash,'by_saved','prev');
   if(currentTab==='done')  data=await getAll(STORES.done,'by_saved','prev');
 
-  if(currentTab==='slots' && searchWord){
-    data = data.filter(x => (x.name||'').toLowerCase().startsWith(searchWord));
+  if(currentFilter){
+    const f=currentFilter;
+    data=data.filter(x=> String(x.name||'').toLowerCase().includes(f));
   }
 
   $list.innerHTML='';
@@ -272,12 +336,11 @@ async function render(){
       row.style.cursor='pointer';
       row.addEventListener('click', async (e)=>{
         if(e.target===btnOverwrite || e.target===btnDel) return;
-        await appendToSlot(rec);
-        await render();
+        await appendToSlot(rec); await render();
       });
       btnOverwrite.onclick=async (e)=>{ e.stopPropagation(); await overwriteSlot(rec); await render(); };
       btnDel.onclick=async (e)=>{ e.stopPropagation(); await removeToDone(rec); await render(); };
-    } else {
+    }else{
       btnOverwrite.disabled=true; btnDel.disabled=true;
       btnOverwrite.title='このタブでは操作できません';
       btnDel.title='このタブでは操作できません';
@@ -295,38 +358,40 @@ $tabs.forEach(t=>t.addEventListener('click',()=>{ $tabs.forEach(x=>x.classList.r
 $clearStash?.addEventListener('click', async (e)=>{ e.stopPropagation(); if(confirm('一時保存をすべて削除します。よろしいですか？')){ await clearStore(STORES.stash); toast('一時保存を空にしました'); render(); }});
 $clearDone?.addEventListener('click', async (e)=>{ e.stopPropagation(); if(confirm('Doneをすべて削除します。よろしいですか？')){ await clearStore(STORES.done); toast('Doneを空にしました'); render(); }});
 
-$export.onclick=async()=>{
-  const items=await getAll(STORES.slots);
-  const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`slots-${new Date().toISOString().slice(0,10)}.json`;
-  a.click(); URL.revokeObjectURL(a.href);
-};
-$import.onclick=async()=>{
-  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
-  inp.onchange=async ()=>{
-    const f=inp.files?.[0]; if(!f) return;
-    const text=await f.text();
-    let arr=[]; try{ arr=JSON.parse(text)||[]; }catch{ toast('JSONが不正です'); return; }
+$export.onclick=async()=>{ const items=await getAll(STORES.slots); const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`slots-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href); };
+$import.onclick=async()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+  inp.onchange=async ()=>{ const f=inp.files?.[0]; if(!f) return; const text=await f.text(); let arr=[]; try{ arr=JSON.parse(text)||[]; }catch{ toast('JSONが不正です'); return; }
     if(!Array.isArray(arr)){ toast('JSON配列ではありません'); return; }
-    for(const x of arr){
-      if(!x.name || typeof x.content!=='string') continue;
-      await put(STORES.slots, { name:String(x.name), content:String(x.content), updatedAt:now() });
-    }
+    for(const x of arr){ if(!x.name || typeof x.content!=='string') continue; await put(STORES.slots, { name:String(x.name), content:String(x.content), updatedAt:now() }); }
     await render(); toast('インポートしました');
   };
   inp.click();
 };
 
+$account.onclick=async()=>{
+  const cur=(localStorage.getItem('user_email')||'').trim();
+  const email=prompt('メールアドレス（Pro購入時の照合に使用・任意）', cur);
+  if(email===null) return;
+  const v=(email||'').trim();
+  if(v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ toast('メール形式が不正です'); return; }
+  localStorage.setItem('user_email', v);
+  toast(v ? '保存しました' : '未設定にしました');
+  refreshEntitlementIfPossible();
+};
+
+$upgrade.onclick=()=>{ showPaywall(); };
+$later.onclick=()=>{ hidePaywall(); };
+$pay.onclick=()=>{
+  hidePaywall();
+  location.href = CHECKOUT_URL; // ← 後で本番URLに
+};
+
 /* 起動 */
 (async function init(){
+  setEntitled(isEntitled());
   await openDB();
   await render();
-  // PWA用SW登録（存在すれば）
-  if ('serviceWorker' in navigator) {
-    try { await navigator.serviceWorker.register('/service-worker.js'); } catch {}
-  }
+  refreshEntitlementIfPossible();
 })();
 </script>
-</body>
 </html>
