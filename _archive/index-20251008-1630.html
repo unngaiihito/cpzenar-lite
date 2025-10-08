@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cpzenar – 無限スロット（追記/上書き/Done・フォールバックON）</title>
+<!-- head終わり付近でStripe.jsを読み込み -->
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  :root {
+    --bg: #0b0b0c;
+    --fg: #f5f6f7;
+    --mut: #a9acb2;
+    --acc: #4f8cff;
+    --ok: #00c37a;
+    --warn: #ffb020;
+    --bad: #ff5a5a;
+    --card: #141518;
+    --line: #23252a;
+  }
+
+  * {
+    box-sizing: border-box
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans JP', sans-serif
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 14px
+  }
+
+  header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px
+  }
+
+  header h1 {
+    font-size: 18px;
+    margin: 0
+  }
+
+  header .pill {
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #15161b;
+    color: #d6d7db
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px
+  }
+
+  input[type=text] {
+    flex: 1;
+    min-width: 240px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: #fff;
+    padding: 10px
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 3.2em;
+    max-height: 9em;
+    resize: vertical;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: #fff;
+    padding: 10px
+  }
+
+  .btn {
+    background: #23252a;
+    border: none;
+    color: #e8eaed;
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer
+  }
+
+  .btn.acc {
+    background: var(--acc);
+    color: #fff
+  }
+
+  .btn.danger {
+    background: #2b1619;
+    border: 1px solid #5a1f26
+  }
+
+  .btn.ghost {
+    background: #15161b;
+    color: #d6d7db;
+    border: 1px solid var(--line)
+  }
+
+  .hint {
+    color: var(--mut);
+    font-size: 12px;
+    margin-top: 4px
+  }
+
+  .bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px
+  }
+
+  .tab {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #d6d7db;
+    background: #15161b;
+    display: flex;
+    gap: 8px;
+    align-items: center
+  }
+
+  .tab.on {
+    background: #1b1d24;
+    border-color: #2b2f38
+  }
+
+  .right {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    align-items: center
+  }
+
+  .listWrap {
+    margin-top: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden
+  }
+
+  .list {
+    max-height: 68vh;
+    overflow: auto
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    border-top: 1px solid #1e2026
+  }
+
+  .item:first-child {
+    border-top: none
+  }
+
+  .item:hover {
+    background: #121318
+  }
+
+  .name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+
+  .ts {
+    color: #9aa0a6;
+    font-size: 12px
+  }
+
+  .mini {
+    font-size: 12px;
+    padding: 6px 8px;
+    margin-left: 4px
+  }
+
+  .empty {
+    padding: 18px;
+    color: #aaa;
+    text-align: center
+  }
+
+  .toast {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: rgba(0, 0, 0, .45);
+    z-index: 50
+  }
+
+  .toast.show {
+    display: grid
+  }
+
+  .toast .box {
+    background: #0e1713;
+    border: 1px solid #163d2d;
+    padding: 18px;
+    border-radius: 14px;
+    color: #d9f7e9
+  }
+
+  /* Paywall modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: rgba(0, 0, 0, .55);
+    z-index: 60
+  }
+
+  .modal.show {
+    display: grid
+  }
+
+  .sheet {
+    width: min(560px, 92vw);
+    background: #0f1116;
+    border: 1px solid #2b2f38;
+    border-radius: 16px;
+    padding: 18px
+  }
+
+  .sheet h2 {
+    margin: 0 0 8px;
+    font-size: 18px
+  }
+
+  .sheet p {
+    margin: 6px 0 10px;
+    color: #cfd2d8
+  }
+
+  .sheet .row {
+    margin: 10px 0
+  }
+
+  .badge {
+    display: inline-block;
+    background: #1b2030;
+    border: 1px solid #2b2f38;
+    color: #bcd0ff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px
+  }
+
+  .price {
+    font-weight: 700
+  }
+
+  .dim {
+    color: #a9acb2
+  }
+
+  .kbd {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    background: #151922;
+    border: 1px solid #2b2f38;
+    border-radius: 6px;
+    padding: 2px 6px
+  }
+
+  /* footer */
+  footer {
+    margin-top: 24px;
+    padding: 16px 12px;
+    border-top: 1px solid #2b2f38;
+    font: 14px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans JP', sans-serif;
+    background: #0f1116
+  }
+
+  footer nav {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center
+  }
+
+  footer a {
+    color: #9fb4ff;
+    text-decoration: none
+  }
+
+  footer a:hover {
+    text-decoration: underline
+  }
+
+  footer .copy {
+    margin-left: auto;
+    color: #666
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>無限スロット（行クリック=追記 / 右の［上書き］・［✖］）</h1>
+    <span class="pill" id="planBadge">Free: スロット上限 1</span>
+    <span class="right" style="margin-left:auto;gap:8px;display:flex;align-items:center">
+      <input id="search" type="text" placeholder="スロット名を検索">
+      <button class="btn ghost" id="accountBtn" title="メールを設定（任意）">アカウント</button>
+      <button class="btn acc" id="upgradeBtn" title="Proへアップグレード">Proにする</button>
+    </span>
+  </header>
+
+  <div class="row">
+    <input id="slotName" type="text" placeholder="新しいスロット名を入力して［追加］">
+    <button class="btn acc" id="addBtn">追加</button>
+    <button class="btn" id="exportBtn">エクスポート(JSON)</button>
+    <button class="btn" id="importBtn">インポート(JSON)</button>
+  </div>
+
+  <div class="bar">
+    <div class="tabs">
+      <div class="tab on" data-tab="slots">スロット</div>
+      <div class="tab" data-tab="stash">一時保存（上書きの旧版）</div>
+      <div class="tab" data-tab="done">Done（✖で退避）</div>
+    </div>
+    <div class="right">
+      <button class="btn mini danger" id="clearStash" title="一時保存を空にする">一時保存を空に</button>
+      <button class="btn mini danger" id="clearDone" title="Doneを空にする">Doneを空に</button>
+    </div>
+  </div>
+
+  <textarea id="note"
+    placeholder="★“追記したいテキスト”を置いておくと、スロット行クリックで追記されます（フォールバックON）。クリップボードが読める場合は、まずクリップボードが使われます。"></textarea>
+  <div class="hint">保存時は<strong>クリップボード</strong>→空/不可なら<strong>上のテキスト欄</strong>を使います。</div>
+
+  <div class="listWrap">
+    <div id="list" class="list"></div>
+    <div id="empty" class="empty" style="display:none">項目がありません</div>
+  </div>
+
+  <!-- 課金開始ボタン（Stripe Checkout） -->
+  <div class="row">
+    <button class="btn acc" id="buy" title="Plus を開始（¥298/月）">Plus を開始（¥298/月）</button>
+  </div>
+
+  <footer>
+    <nav>
+      <a href="/legal/tokushoho.html">特定商取引法に基づく表記</a>
+      <a href="/legal/refund.html">返金・キャンセルポリシー</a>
+      <a href="/legal/terms.html">利用規約</a>
+      <a href="/legal/privacy.html">プライバシーポリシー</a>
+      <a href="mailto:cpzenar.contact@gmail.com">お問い合わせ</a>
+      <span class="copy">© CPZENAR Labs</span>
+    </nav>
+  </footer>
+</div>
+
+<div class="toast" id="toast">
+  <div class="box" id="toastMsg">OK</div>
+</div>
+
+<div class="modal" id="paywall">
+  <div class="sheet">
+    <h2>Pro でスロット無制限</h2>
+    <p><span class="badge">日本限定</span> <span class="price">¥298/月（内税）</span> – 無料版はスロット <b>1</b> 個までです。</p>
+    <ul class="dim" style="margin:8px 0 12px; padding-left:18px; line-height:1.7">
+      <li>広告なし・完全ローカル保存</li>
+      <li>上書き・一時保存・Done で安心管理</li>
+      <li>メール往復なしのセルフ運用設計</li>
+    </ul>
+
+    <!-- Stripe Payment Form -->
+    <div id="stripe-payment-form"
+      style="border:1px solid #eee;padding:16px;max-width:420px;margin:12px 0;background:#1a1a1a;border-radius:8px">
+      <h3>CPZENAR Plus（月額 ¥298）</h3>
+      <label style="display:block;margin-bottom:8px;color:#cfd2d8">
+        メールアドレス
+        <input id="email" type="email" placeholder="you@example.com" required
+          style="width:100%;padding:8px;margin-top:4px;background:#2a2a2a;border:1px solid #444;border-radius:4px;color:#fff" />
+      </label>
+
+      <div id="payment-element" style="margin:12px 0"></div>
+
+      <button id="start-sub" class="btn acc" style="width:100%;margin-bottom:8px">購読する（テスト）</button>
+      <div id="msg" style="margin-top:8px;color:#555"></div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="laterBtn">今はやめる</button>
+      <button class="btn acc" id="payBtn" style="display:none">Proにアップグレード（¥298/月）</button>
+    </div>
+    <div class="dim" style="font-size:12px;margin-top:6px">
+      ※ 初回決済から7日以内はアプリ内から全額返金可。<br>
+      ※ <span class="kbd">設定 &gt; アカウント</span>からメール設定で購入とアカウント紐付け。
+    </div>
+  </div>
+</div>
+
+<script>
+  (async () => {
+    const mountError = (msg) => {
+      const box = document.getElementById('box');
+      box.innerHTML = `<div style="color:#ff6b6b">読み込みに失敗しました。</div>
+      <div class="mut" style="margin-top:6px">${msg}</div>
+      <div style="margin-top:10px"><button id="retry" style="background:#1b202a;color:#fff;border:1px solid #2b2f38;border-radius:8px;padding:8px 12px;cursor:pointer">再試行</button></div>`;
+      document.getElementById('retry')?.addEventListener('click', () => location.reload());
+    };
+
+    async function loadManifest() {
+      for (const path of ['/app/.vite/manifest.json', '/app/manifest.json']) {
+        try {
+          const res = await fetch(path, { cache: 'no-cache' });
+          if (res.ok) return res.json();
+        } catch { }
+      }
+      throw new Error('manifest not found');
+    }
+
+    try {
+      const manifest = await loadManifest();
+      let entry = null;
+      for (const k in manifest) {
+        const m = manifest[k];
+        if (m && (m.isEntry || k.endsWith('index.html'))) { entry = m; break; }
+      }
+      if (!entry) throw new Error('no entry in manifest');
+
+      if (entry.css && entry.css.length) {
+        for (const href of entry.css) {
+          const l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = '/app/' + href;
+          document.head.appendChild(l);
+        }
+      }
+      const s = document.createElement('script');
+      s.type = 'module';
+      s.src = '/app/' + entry.file;
+      document.body.appendChild(s);
+    } catch (e) { mountError(String(e?.message || e)); }
+  })();
+
+  /* ===== 設定・状態 ===== */
+  const USE_FALLBACK = true;
+  const FREE_LIMIT = 1;
+  const PRO_LIMIT = 999;
+  const API_BASE = "https://cpzenar-api.cpzenar-contact.workers.dev"; // ← あなたのAPI
+  const CHECKOUT_URL = "https://example.com/checkout"; // ← Stripe Checkout のURLに差し替え
+
+  function isEntitled() { return localStorage.getItem('entitled') === 'true'; }
+  function slotsLimit() { return isEntitled() ? PRO_LIMIT : FREE_LIMIT; }
+  function setEntitled(v) {
+    localStorage.setItem('entitled', v ? 'true' : 'false');
+    document.getElementById('planBadge').textContent =
+      v ? 'Pro: スロット上限 無制限' : 'Free: スロット上限 1';
+  }
+
+  /* ===== IndexedDB ===== */
+  const DBN = 'cpzenar_db_v4';
+  const STORES = { slots: 'slots', stash: 'stash', done: 'done' };
+  let db;
+  function openDB() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(DBN, 1);
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        Object.values(STORES).forEach(s => {
+          if (!d.objectStoreNames.contains(s)) {
+            const os = d.createObjectStore(s, { keyPath: 'id', autoIncrement: true });
+            os.createIndex('by_updated', 'updatedAt', { unique: false });
+            os.createIndex('by_name', 'name', { unique: false });
+            os.createIndex('by_saved', 'savedAt', { unique: false });
+          }
+        });
+      };
+      r.onsuccess = () => { db = r.result; res(db); }
+      r.onerror = e => rej(e);
+    });
+  }
+  async function tx(store, mode, fn) {
+    await openDB();
+    return new Promise((res, rej) => {
+      const t = db.transaction(store, mode); const os = t.objectStore(store);
+      fn(os, t); t.oncomplete = () => res(); t.onerror = e => rej(e);
+    });
+  }
+  async function getAll(store, index = 'by_updated', dir = 'prev') {
+    await openDB();
+    return new Promise((res, rej) => {
+      const out = []; const t = db.transaction(store, 'readonly'); const os = t.objectStore(store).index(index);
+      const c = os.openCursor(null, dir);
+      c.onsuccess = () => { const cur = c.result; if (!cur) { res(out); return; } out.push(cur.value); cur.continue(); };
+      c.onerror = e => rej(e);
+    });
+  }
+  async function getByName(name) {
+    await openDB();
+    return new Promise((res, rej) => {
+      const t = db.transaction(STORES.slots, 'readonly'); const os = t.objectStore(STORES.slots).index('by_name');
+      const out = []; const req = os.openCursor(IDBKeyRange.only(name));
+      req.onsuccess = () => { const cur = req.result; if (!cur) { res(out); return; } out.push(cur.value); cur.continue(); };
+      req.onerror = e => rej(e);
+    });
+  }
+  async function countSlots() {
+    await openDB();
+    return new Promise((res, rej) => {
+      const t = db.transaction(STORES.slots, 'readonly'); const os = t.objectStore(STORES.slots);
+      const rq = os.count(); rq.onsuccess = () => res(rq.result || 0); rq.onerror = e => rej(e);
+    });
+  }
+  async function put(store, val) { await tx(store, 'readwrite', (os) => os.put(val)); }
+  async function del(store, id) { await tx(store, 'readwrite', (os) => os.delete(id)); }
+  async function clearStore(store) { await tx(store, 'readwrite', (os) => os.clear()); }
+
+  /* ===== Utils ===== */
+  const now = () => Date.now();
+  function fmtTs(ms) { try { return new Date(ms).toLocaleString(); } catch { return '' } }
+  function toast(msg) { const t = document.getElementById('toast'), m = document.getElementById('toastMsg'); m.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1200); }
+  function showPaywall() { document.getElementById('paywall').classList.add('show'); }
+  function hidePaywall() { document.getElementById('paywall').classList.remove('show'); }
+
+  async function refreshEntitlementIfPossible() {
+    const email = (localStorage.getItem('user_email') || '').trim().toLowerCase();
+    if (!email) return;
+    try {
+      const r = await fetch(`${API_BASE}/entitlement?email=${encodeURIComponent(email)}`);
+      const j = await r.json();
+      setEntitled(j?.entitled === true);
+    } catch (_) { }
+  }
+
+  /* 入力テキスト（クリップボード→フォールバック） */
+  async function getInputText() {
+    try {
+      const s = await navigator.clipboard.readText();
+      if (s && s.trim()) return s;
+    } catch { }
+    const fb = document.getElementById('note').value || '';
+    if (fb && fb.trim()) return fb;
+    return '';
+  }
+
+  /* ===== Core ops ===== */
+  async function addSlotByName(name, content) {
+    const current = await countSlots();
+    if (current >= slotsLimit()) {
+      showPaywall();
+      return false;
+    }
+    const rec = { name, content, updatedAt: now() };
+    await put(STORES.slots, rec);
+    return true;
+  }
+  async function appendToSlot(rec) {
+    const text = await getInputText();
+    if (!text) { toast('保存できるテキストがありません（クリップボード/テキスト欄とも空）'); return; }
+    const sep = rec.content && !rec.content.endsWith('\n') ? '\n' : '';
+    rec.content = (rec.content || '') + sep + text;
+    rec.updatedAt = now();
+    await put(STORES.slots, rec);
+    toast('追記して保存しました');
+  }
+  async function overwriteSlot(rec) {
+    const text = await getInputText();
+    if (!text) { toast('保存できるテキストがありません'); return; }
+    const stashRec = { name: rec.name, content: rec.content, originId: rec.id, savedAt: now(), updatedAt: now() };
+    await put(STORES.stash, stashRec);
+    rec.content = text;
+    rec.updatedAt = now();
+    await put(STORES.slots, rec);
+    toast('上書きしました（旧版は一時保存へ）');
+  }
+  async function removeToDone(rec) {
+    const doneRec = { name: rec.name, content: rec.content, originId: rec.id, savedAt: now(), updatedAt: now() };
+    await put(STORES.done, doneRec);
+    await del(STORES.slots, rec.id);
+    toast('Doneへ移動しました');
+  }
+
+  /* ===== UI ===== */
+  const $name = document.getElementById('slotName');
+  const $add = document.getElementById('addBtn');
+  const $list = document.getElementById('list');
+  const $empty = document.getElementById('empty');
+  const $export = document.getElementById('exportBtn');
+  const $import = document.getElementById('importBtn');
+  const $tabs = document.querySelectorAll('.tab');
+  const $clearStash = document.getElementById('clearStash');
+  const $clearDone = document.getElementById('clearDone');
+  const $search = document.getElementById('search');
+  const $upgrade = document.getElementById('upgradeBtn');
+  const $account = document.getElementById('accountBtn');
+  const $later = document.getElementById('laterBtn');
+  const $pay = document.getElementById('payBtn');
+
+  let currentTab = 'slots';
+  let currentFilter = '';
+
+  $name.value = localStorage.getItem('last_slot_name') || '';
+  $name.addEventListener('input', () => localStorage.setItem('last_slot_name', $name.value));
+  $search.addEventListener('input', () => { currentFilter = ($search.value || '').trim().toLowerCase(); render(); });
+
+  $add.onclick = async () => {
+    const nm = ($name.value || '').trim(); if (!nm) { toast('スロット名を入力'); return; }
+    const dup = await getByName(nm);
+    if (dup.length) { toast('同名のスロットがあります'); return; }
+    const text = await getInputText();
+    if (!text) { toast('保存できるテキストがありません'); return; }
+    const ok = await addSlotByName(nm, text);
+    if (!ok) return;
+    $name.value = ''; localStorage.removeItem('last_slot_name');
+    await render();
+    toast('作成しました');
+  };
+
+  async function render() {
+    let data = [];
+    if (currentTab === 'slots') data = await getAll(STORES.slots);
+    if (currentTab === 'stash') data = await getAll(STORES.stash, 'by_saved', 'prev');
+    if (currentTab === 'done') data = await getAll(STORES.done, 'by_saved', 'prev');
+
+    if (currentFilter) {
+      const f = currentFilter;
+      data = data.filter(x => String(x.name || '').toLowerCase().includes(f));
+    }
+
+    $list.innerHTML = '';
+    if (!data.length) { $empty.style.display = 'block'; return; }
+    $empty.style.display = 'none';
+
+    for (const rec of data) {
+      const row = document.createElement('div'); row.className = 'item';
+      const left = document.createElement('div');
+      const name = document.createElement('div'); name.className = 'name'; name.textContent = rec.name;
+      const ts = document.createElement('div'); ts.className = 'ts';
+      ts.textContent = currentTab === 'slots' ? `更新: ${fmtTs(rec.updatedAt)}` : `退避: ${fmtTs(rec.savedAt)}`;
+      left.appendChild(name); left.appendChild(ts);
+
+      const btnOverwrite = document.createElement('button');
+      btnOverwrite.className = 'btn mini'; btnOverwrite.textContent = '上書き';
+
+      const btnDel = document.createElement('button');
+      btnDel.className = 'btn mini danger'; btnDel.textContent = '✖';
+
+      if (currentTab === 'slots') {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', async (e) => {
+          if (e.target === btnOverwrite || e.target === btnDel) return;
+          await appendToSlot(rec); await render();
+        });
+        btnOverwrite.onclick = async (e) => { e.stopPropagation(); await overwriteSlot(rec); await render(); };
+        btnDel.onclick = async (e) => { e.stopPropagation(); await removeToDone(rec); await render(); };
+      } else {
+        btnOverwrite.disabled = true; btnDel.disabled = true;
+        btnOverwrite.title = 'このタブでは操作できません';
+        btnDel.title = 'このタブでは操作できません';
+      }
+
+      row.appendChild(left);
+      row.appendChild(btnOverwrite);
+      row.appendChild(btnDel);
+      $list.appendChild(row);
+    }
+  }
+
+  $tabs.forEach(t => t.addEventListener('click', () => { $tabs.forEach(x => x.classList.remove('on')); t.classList.add('on'); currentTab = t.dataset.tab; render(); }));
+
+  $clearStash?.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm('一時保存をすべて削除します。よろしいですか？')) { await clearStore(STORES.stash); toast('一時保存を空にしました'); render(); } });
+  $clearDone?.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm('Doneをすべて削除します。よろしいですか？')) { await clearStore(STORES.done); toast('Doneを空にしました'); render(); } });
+
+  $export.onclick = async () => { const items = await getAll(STORES.slots); const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `slots-${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href); };
+  $import.onclick = async () => {
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json';
+    inp.onchange = async () => {
+      const f = inp.files?.[0]; if (!f) return; const text = await f.text(); let arr = []; try { arr = JSON.parse(text) || []; } catch { toast('JSONが不正です'); return; }
+      if (!Array.isArray(arr)) { toast('JSON配列ではありません'); return; }
+      for (const x of arr) { if (!x.name || typeof x.content !== 'string') continue; await put(STORES.slots, { name: String(x.name), content: String(x.content), updatedAt: now() }); }
+      await render(); toast('インポートしました');
+    };
+    inp.click();
+  };
+
+  $account.onclick = async () => {
+    const cur = (localStorage.getItem('user_email') || '').trim();
+    const email = prompt('メールアドレス（Pro購入時の照合に使用・任意）', cur);
+    if (email === null) return;
+    const v = (email || '').trim();
+    if (v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { toast('メール形式が不正です'); return; }
+    localStorage.setItem('user_email', v);
+    toast(v ? '保存しました' : '未設定にしました');
+    refreshEntitlementIfPossible();
+  };
+
+  $upgrade.onclick = () => { showPaywall(); };
+  $later.onclick = () => { hidePaywall(); };
+  $pay.onclick = () => {
+    hidePaywall();
+    location.href = CHECKOUT_URL; // ← 後で本番URLに
+  };
+
+  /* ===== Stripe Checkout (Hosted) ===== */
+  async function startCheckout() {
+    try {
+      const priceRes = await fetch('/price-id');
+      const priceJson = await priceRes.json();
+      const priceId = priceJson.priceId;
+      if (!priceId) {
+        alert('価格が見つかりません（lookup_keyや環境変数を確認してください）');
+        return;
+      }
+
+      const sessRes = await fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId })
+      });
+      const sess = await sessRes.json();
+
+      if (sess.url) {
+        location.href = sess.url;
+      } else if (sess.id) {
+        await stripe.redirectToCheckout({ sessionId: sess.id });
+      } else {
+        alert('セッション作成に失敗しました: ' + (sess.error || 'unknown'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('エラーが発生しました');
+    }
+  }
+
+  document.getElementById('buy')?.addEventListener('click', startCheckout);
+
+  /* ===== Stripe Payment Integration ===== */
+  const STRIPE_PK = "pk_test_51SFCygQs8tE2E7TctMEFHSaMROMjujvlZBfe1pm0bTMgc0Vonb8KkAMmPxeTx2i8DsJSrS4ZcolBCg9JDEGvMUf700bWy24JNl";            // ← あなたの公開可能キー
+  const PRICE_ID = "price_1SFZGPQs8tE2E7TcV6cPkVW2";              // ← 298円の価格ID（テスト）
+
+  const stripe = Stripe(STRIPE_PK);
+  let elements, clientSecret, customerId;
+
+  async function initElements() {
+    // 1) サーバーで顧客 + SetupIntent 作成
+    const email = document.getElementById('email').value || '';
+    const res = await fetch('/create-customer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'create-customer failed');
+
+    clientSecret = data.clientSecret;   // SetupIntent.client_secret
+    customerId = data.customerId;
+
+    // 2) PaymentElement 準備
+    elements = stripe.elements({ clientSecret });
+    const paymentElement = elements.create('payment');
+    paymentElement.mount('#payment-element');
+  }
+
+  async function handleSubscribe() {
+    const msg = (t) => document.getElementById('msg').textContent = t;
+
+    msg('カード情報を確認しています...');
+    // 3) カードを保存（confirmSetup）
+    const { error } = await stripe.confirmSetup({
+      elements,
+      confirmParams: { return_url: window.location.href } // リダイレクト不要でもOK
+    });
+    if (error) { msg(error.message || 'カード保存に失敗しました'); return; }
+
+    msg('サブスクリプションを作成しています...');
+    // 4) サブスク作成
+    const res = await fetch('/create-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerId, priceId: PRICE_ID })
+    });
+    const data = await res.json();
+    if (!res.ok) { msg(data.error || '作成に失敗しました'); return; }
+
+    // 5) 成功。以降は「Plus開放」
+    msg('購読が完了しました！（テスト）');
+    setEntitled(true);
+    hidePaywall();
+    toast('Proにアップグレードしました！');
+    await render();
+  }
+
+  // Stripe関連のイベントリスナーを追加
+  document.addEventListener('DOMContentLoaded', function () {
+    const startSubBtn = document.getElementById('start-sub');
+    const emailInput = document.getElementById('email');
+
+    if (startSubBtn) {
+      startSubBtn.addEventListener('click', handleSubscribe);
+    }
+
+    if (emailInput) {
+      // メール入力後に呼ぶ。最初は空でOK、メール変更時に呼び直しでもよい
+      emailInput.addEventListener('change', initElements);
+      // 初期化（仮で1回呼ぶ）
+      initElements().catch(e => {
+        const msgEl = document.getElementById('msg');
+        if (msgEl) msgEl.textContent = e.message;
+      });
+    }
+  });
+
+  /* 起動 */
+  (async function init() {
+    setEntitled(isEntitled());
+    await openDB();
+    await render();
+    refreshEntitlementIfPossible();
+  })();
+
+  // ===== Device-based entitlement and checkout glue =====
+  // 端末ID
+  function uuid() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+  }
+  const deviceId = localStorage.getItem('cpz_device_id') || (() => {
+    const id = uuid(); localStorage.setItem('cpz_device_id', id); return id;
+  })();
+
+  // ペイウォール状態
+  let entitlement = { active: false, plan: 'free', slots: 1 };
+
+  async function loadEntitlement() {
+    try {
+      const res = await fetch(`/entitlement?device=${encodeURIComponent(deviceId)}`);
+      entitlement = await res.json();
+      applyPaywall();
+    } catch { }
+  }
+
+  function applyPaywall() {
+    const paid = !!entitlement.active;
+    // 例：無料は 1 スロットだけ可、課金は無限
+    window.MAX_SLOTS = paid ? Infinity : 1;
+
+    // UI 表示切り替え（例）
+    document.querySelectorAll('.paywall-badge').forEach(el => {
+      el.textContent = paid ? 'CPZENAR Plus' : 'Free (1 slot)';
+    });
+    document.querySelectorAll('.upgrade-cta').forEach(el => {
+      el.style.display = paid ? 'none' : 'inline-flex';
+    });
+  }
+
+  async function upgrade() {
+    // 価格IDは /price-id から取得済みとして再利用
+    let priceId = window.__PRICE_ID__;
+    if (!priceId) {
+      const r = await fetch('/price-id'); const j = await r.json();
+      priceId = j.priceId; window.__PRICE_ID__ = priceId;
+    }
+    const r2 = await fetch('/create-checkout-session', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ priceId, deviceId })
+    });
+    const { url } = await r2.json();
+    if (url) location.href = url;
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    // ペイウォール初期化
+    await loadEntitlement();
+
+    // アップグレードボタン
+    document.querySelectorAll('.upgrade-cta').forEach(btn => {
+      btn.addEventListener('click', upgrade);
+    });
+  });
+</script>
+
+</html>
