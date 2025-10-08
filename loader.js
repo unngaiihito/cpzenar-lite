@@ -1,38 +1,27 @@
-// loader.js - ローダーの最小ブートロジック（同一オリジン /app/.vite/manifest.json を読む）
-(async () => {
-  try {
-    const res = await fetch('/app/.vite/manifest.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('manifest fetch failed');
-    const mani = await res.json();
+﻿(async () => {
+  const root = "/app";
+  const manifest = await fetch(`${root}/.vite/manifest.json`, { cache: "no-store" })
+    .then(r => { if (!r.ok) throw new Error(`manifest fetch failed: ${r.status}`); return r.json(); });
 
-    // Vite の vanilla テンプレは "assets/index-*.js" がエントリ（'index.html' キーでも可）
-    // キーが安定しない環境向けに、最初のエントリっぽいものを拾うフォールバックも用意
-    let entry = mani['index.html']?.file
-             || Object.values(mani).find(v => v?.isEntry)?.file;
+  const entry = manifest["index.html"] ?? Object.values(manifest).find(m => m.isEntry);
+  if (!entry) throw new Error("entry not found in manifest");
 
-    const cssList =
-      mani['index.html']?.css
-      || Object.values(mani).find(v => v?.isEntry)?.css
-      || [];
+  const cssList = (entry.css ?? []).map(p => `${root}/${p}`);
+  const jsFile  = entry.file ? `${root}/${entry.file}` : null;
 
-    if (!entry) throw new Error('entry not found in manifest');
-
-    // CSS を注入
-    for (const css of cssList) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = `/app/${css}`;
-      document.head.appendChild(link);
-    }
-
-    // JS を注入（defer）
-    const script = document.createElement('script');
-    script.src = `/app/${entry}`;
-    script.defer = true;
-    document.body.appendChild(script);
-  } catch (e) {
-    console.error('[loader] boot failed:', e);
-    const el = document.getElementById('boot-error');
-    if (el) el.textContent = '起動に失敗しました。時間をおいて再読込してください。';
+  for (const href of cssList) {
+    const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; document.head.appendChild(l);
   }
-})();
+  if (jsFile) {
+    await new Promise((res, rej) => {
+      const s = document.createElement("script"); s.src = jsFile; s.defer = true;
+      s.onload = res; s.onerror = () => rej(new Error(`failed to load ${jsFile}`));
+      document.head.appendChild(s);
+    });
+  }
+})().catch(err => {
+  console.error(err);
+  document.body.innerHTML =
+    "<div style='padding:16px;font-family:system-ui;'><h2>Loader Error</h2><pre style='white-space:pre-wrap;'>"
+    + String(err?.stack ?? err) + "</pre></div>";
+});
