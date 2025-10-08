@@ -1,20 +1,14 @@
-/* 
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'report-sample'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.stripe.com https://r.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; report-to csp-endpoint
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Referrer-Policy: strict-origin-when-cross-origin
+﻿/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.stripe.com https://r.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'none'; worker-src 'self';
   X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Cross-Origin-Opener-Policy: same-origin
-  Cross-Origin-Resource-Policy: same-origin
-  Cross-Origin-Embedder-Policy: require-corp
+  Referrer-Policy: same-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Cache-Control: public, max-age=0, must-revalidate
 
-/index.html
+/app/.vite/manifest.json
   Cache-Control: no-store
 
 /loader.js
-  Cache-Control: no-store
-
-/app/.vite/manifest.json
   Cache-Control: no-store
 
 /app/assets/*
