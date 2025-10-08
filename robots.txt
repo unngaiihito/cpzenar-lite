@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://app.cpzenar.com/sitemap.xml
